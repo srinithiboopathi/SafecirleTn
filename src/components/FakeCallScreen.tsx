@@ -427,8 +427,8 @@ export const FakeCallScreen: React.FC<FakeCallProps> = ({
               onClick={() => {
                 const next = !isSpeakerOn;
                 setIsSpeakerOn(next);
-                if (!next && typeof window !== 'undefined' && 'speechSynthesis' in window) {
-                  window.speechSynthesis.cancel();
+                if (!next) {
+                  stopAllVoicePlayback();
                   setIsAiSpeaking(false);
                 }
               }}

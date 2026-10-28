@@ -1,6 +1,10 @@
 import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
+import { unlockAudioOnUserGesture } from './utils/tamilVoice';
+
+// Prime audio context on user interaction
+unlockAudioOnUserGesture();
 
 // Register offline Service Worker
 if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {

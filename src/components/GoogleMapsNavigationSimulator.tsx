@@ -404,12 +404,14 @@ export const GoogleMapsNavigationSimulator: React.FC<GoogleMapsNavigationSimulat
       if (step) {
         try {
           window.speechSynthesis.cancel();
+          window.speechSynthesis.resume();
           const utterance = new SpeechSynthesisUtterance(
             `In ${activeNavState.distToNextTurn} meters, ${step.instruction}`
           );
           utterance.rate = 1.05;
           utterance.pitch = 1.0;
           window.speechSynthesis.speak(utterance);
+          window.speechSynthesis.resume();
         } catch (e) {
           console.warn('SpeechSynthesis warning:', e);
         }

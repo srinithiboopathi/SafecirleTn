@@ -205,9 +205,59 @@ export function getVoiceLanguageConfig(code: SupportedVoiceLang): VoiceLanguageO
   );
 }
 
+let globalAudioCtx: AudioContext | null = null;
+let activeBufferSource: AudioBufferSourceNode | null = null;
 let activeAudio: HTMLAudioElement | null = null;
 let activeSpeechSessionId = 0;
 let activeAbortController: AbortController | null = null;
+
+export function getOrCreateAudioContext(): AudioContext | null {
+  if (typeof window === 'undefined') return null;
+  const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
+  if (!AudioCtx) return null;
+  if (!globalAudioCtx || globalAudioCtx.state === 'closed') {
+    globalAudioCtx = new AudioCtx();
+  }
+  if (globalAudioCtx.state === 'suspended') {
+    globalAudioCtx.resume().catch(() => {});
+  }
+  return globalAudioCtx;
+}
+
+export function unlockAudioOnUserGesture() {
+  if (typeof window === 'undefined') return;
+  const unlock = () => {
+    try {
+      const ctx = getOrCreateAudioContext();
+      if (ctx && ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.resume();
+      }
+    } catch {
+      // Ignore
+    }
+  };
+  ['pointerdown', 'click', 'touchstart', 'keydown'].forEach(evt => {
+    window.addEventListener(evt, unlock, { once: false, passive: true });
+  });
+}
+
+// Auto-register unlock listener immediately
+if (typeof window !== 'undefined') {
+  unlockAudioOnUserGesture();
+}
+
+function base64ToArrayBuffer(base64: string): ArrayBuffer {
+  const binaryString = window.atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
 
 export function stopAllVoicePlayback() {
   activeSpeechSessionId += 1;
@@ -219,6 +269,17 @@ export function stopAllVoicePlayback() {
       // Ignore
     }
     activeAbortController = null;
+  }
+
+  if (activeBufferSource) {
+    try {
+      activeBufferSource.onended = null;
+      activeBufferSource.stop();
+      activeBufferSource.disconnect();
+    } catch {
+      // Ignore
+    }
+    activeBufferSource = null;
   }
 
   if (activeAudio) {
@@ -236,6 +297,7 @@ export function stopAllVoicePlayback() {
   if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     try {
       window.speechSynthesis.cancel();
+      window.speechSynthesis.resume();
     } catch {
       // Ignore
     }
@@ -285,6 +347,8 @@ function speakWithBrowserSynthesis(
 
   try {
     window.speechSynthesis.cancel();
+    window.speechSynthesis.resume();
+
     const cfg = getVoiceLanguageConfig(lang);
     const utterance = new SpeechSynthesisUtterance(cleanTextForSpeech(text, lang));
     utterance.lang = cfg.bcp47;
@@ -295,24 +359,42 @@ function speakWithBrowserSynthesis(
       const langPrefix = lang.toLowerCase();
       const matchedVoice =
         voices.find(v => v.lang.toLowerCase() === cfg.bcp47.toLowerCase()) ||
-        voices.find(v => v.lang.toLowerCase().startsWith(langPrefix)) ||
+        voices.find(v => v.lang.toLowerCase().replace('_', '-').startsWith(langPrefix)) ||
         voices.find(v =>
           v.name.toLowerCase().includes(cfg.englishLabel.toLowerCase())
         ) ||
-        voices.find(v => v.lang.toLowerCase() === 'en-in');
+        voices.find(v => v.lang.toLowerCase() === 'en-in') ||
+        voices.find(v => v.lang.toLowerCase().startsWith('en'));
       if (matchedVoice) utterance.voice = matchedVoice;
     }
+
+    let finished = false;
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      if (sessionId === activeSpeechSessionId) callbacks?.onEnd?.();
+    };
 
     utterance.onstart = () => {
       if (sessionId === activeSpeechSessionId) callbacks?.onStart?.();
     };
-    utterance.onend = () => {
-      if (sessionId === activeSpeechSessionId) callbacks?.onEnd?.();
+    utterance.onend = finish;
+    utterance.onerror = (e) => {
+      console.warn('SpeechSynthesis error:', e);
+      finish();
     };
-    utterance.onerror = () => {
-      if (sessionId === activeSpeechSessionId) callbacks?.onEnd?.();
-    };
+
+    // Watchdog timer: If Chrome freezes SpeechSynthesis or drops onend event, release UI after estimated duration
+    const wordCount = text.split(/\s+/).length;
+    const maxDurationMs = Math.max(3000, Math.min(25000, wordCount * 550));
+    setTimeout(() => {
+      if (!finished && sessionId === activeSpeechSessionId) {
+        finish();
+      }
+    }, maxDurationMs);
+
     window.speechSynthesis.speak(utterance);
+    window.speechSynthesis.resume();
   } catch {
     if (sessionId === activeSpeechSessionId) callbacks?.onEnd?.();
   }
@@ -323,7 +405,10 @@ export async function speakInVoice(
   lang: SupportedVoiceLang = 'ta',
   callbacks?: { onStart?: () => void; onEnd?: () => void }
 ): Promise<void> {
-  // Immediately cancel any existing audio, speechSynthesis, or in-flight TTS fetch
+  // Wake up/unlock AudioContext immediately within the user gesture window!
+  const audioCtx = getOrCreateAudioContext();
+
+  // Immediately cancel any existing audio, buffer source, speechSynthesis, or in-flight TTS fetch
   stopAllVoicePlayback();
 
   const mySessionId = activeSpeechSessionId;
@@ -352,7 +437,6 @@ export async function speakInVoice(
       signal: abortController.signal
     });
 
-    // If another speech request started or stopAllVoicePlayback was called while fetching, abort immediately
     if (mySessionId !== activeSpeechSessionId) {
       return;
     }
@@ -363,29 +447,70 @@ export async function speakInVoice(
         return;
       }
 
-      if (data && data.audioBase64 && data.mimeType) {
-        // Ensure browser speechSynthesis is completely silent before playing HTML5 Audio
+      if (data && data.audioBase64) {
+        // Ensure browser speechSynthesis is completely silent before playing audio
         if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
           window.speechSynthesis.cancel();
+          window.speechSynthesis.resume();
         }
 
-        const audio = new Audio(`data:${data.mimeType};base64,${data.audioBase64}`);
-        activeAudio = audio;
+        // Tier 1 (Primary & Most Reliable): Web Audio API AudioBufferSourceNode
+        // Bypasses browser autoplay restrictions because the AudioContext was already unlocked!
+        const ctx = audioCtx || getOrCreateAudioContext();
+        if (ctx) {
+          try {
+            if (ctx.state === 'suspended') {
+              await ctx.resume();
+            }
+            const arrayBuf = base64ToArrayBuffer(data.audioBase64);
+            const audioBuffer = await ctx.decodeAudioData(arrayBuf);
 
-        audio.onended = () => {
-          if (activeAudio === audio) activeAudio = null;
-          if (mySessionId === activeSpeechSessionId) {
-            callbacks?.onEnd?.();
+            if (mySessionId !== activeSpeechSessionId) return;
+
+            const source = ctx.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(ctx.destination);
+            activeBufferSource = source;
+
+            source.onended = () => {
+              if (activeBufferSource === source) {
+                activeBufferSource = null;
+              }
+              if (mySessionId === activeSpeechSessionId) {
+                callbacks?.onEnd?.();
+              }
+            };
+
+            source.start(0);
+            return;
+          } catch (webAudioErr) {
+            console.warn('Web Audio decode failed, trying HTML5 Audio element:', webAudioErr);
           }
-        };
+        }
 
-        audio.onerror = () => {
-          if (activeAudio === audio) activeAudio = null;
+        // Tier 2 (Secondary Fallback): HTML5 Audio element
+        try {
+          const audio = new Audio(`data:${data.mimeType || 'audio/mpeg'};base64,${data.audioBase64}`);
+          activeAudio = audio;
+
+          audio.onended = () => {
+            if (activeAudio === audio) activeAudio = null;
+            if (mySessionId === activeSpeechSessionId) {
+              callbacks?.onEnd?.();
+            }
+          };
+
+          audio.onerror = () => {
+            if (activeAudio === audio) activeAudio = null;
+            triggerSingleFallback();
+          };
+
+          await audio.play();
+          return;
+        } catch {
           triggerSingleFallback();
-        };
-
-        await audio.play();
-        return;
+          return;
+        }
       }
     }
   } catch (err: any) {
