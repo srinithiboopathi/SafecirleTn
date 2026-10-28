@@ -1,0 +1,1195 @@
+# PROJECT: SafeCircle AI
+## AI-Powered Women's Travel Safety and Route Intelligence Platform
+
+Act as a senior full-stack developer, UI/UX designer, GIS engineer, backend architect, and application security engineer.
+
+Build a complete, functional web application called **SafeCircle AI** from scratch.
+
+Do not build only a landing page or a static UI prototype. Build a connected full-stack application with functional pages, a database, API integrations, route analysis, safety reporting, emergency features, and user authentication.
+
+The result must be visually polished, technically sound, responsive, interactive, and suitable for a college project demonstration.
+
+Do not ask me to implement individual components manually. Work through the project systematically, create the necessary files, configure the application, implement the features, and test the completed workflows.
+
+If an external service requires an API key, document the requirement and provide a functional configuration path. Never fabricate API responses or claim that an unavailable integration is working.
+
+---
+
+# 1. PROJECT OBJECTIVE
+
+SafeCircle AI helps users make better-informed travel decisions by analysing alternative routes using available safety-related data.
+
+The application should consider:
+
+- Reported crime and safety incidents.
+- Street-lighting information.
+- Road hazards and road conditions.
+- Accident-related information.
+- Relevant weather conditions.
+- Nearby emergency facilities.
+- Available geographic and infrastructure data.
+- The freshness, reliability, and coverage of the data.
+
+The system should calculate transparent route-risk indicators, explain its results, display alternative routes, and allow users to access emergency support.
+
+Do not claim that any route is guaranteed safe.
+
+Missing data must be represented as unknown, not as evidence that an area is safe.
+
+---
+
+# 2. REQUIRED TECHNOLOGY STACK
+
+Use the following technologies unless a genuine compatibility issue requires a documented alternative.
+
+FRONTEND:
+- React.
+- Vite.
+- JavaScript.
+- Tailwind CSS.
+- React Router.
+- Axios.
+- Leaflet and React Leaflet.
+- Lucide React icons.
+- React Hook Form where useful.
+
+BACKEND:
+- Python.
+- FastAPI.
+- Pydantic.
+- SQLAlchemy.
+- Alembic database migrations.
+- PostgreSQL.
+- PostGIS for geographic queries.
+- Secure password hashing.
+- JWT authentication or secure session authentication.
+
+EXTERNAL SERVICES:
+- OpenStreetMap for map data.
+- Leaflet for rendering the map.
+- OSRM or another routing provider for alternative routes.
+- A geocoding provider for address searches.
+- Overpass API for nearby mapped facilities.
+- Official and legally accessible safety-data sources.
+- A weather provider for relevant weather information.
+- An LLM API for the optional AI safety assistant.
+- An email or SMS provider for actual message delivery.
+
+TESTING:
+- Pytest for the backend.
+- Appropriate frontend component and integration testing.
+- API endpoint tests.
+- End-to-end tests for important user journeys.
+
+Use environment variables for secrets and configuration.
+
+Never place secret API keys in frontend source code.
+
+---
+
+# 3. DESIGN DIRECTION
+
+Create an original, professional, human-designed interface.
+
+The website must not look like a generic AI-generated dashboard.
+
+DESIGN PRINCIPLES:
+- Clean layouts.
+- Strong typography.
+- Clear visual hierarchy.
+- Restrained colour palette.
+- Carefully designed spacing.
+- Realistic maps.
+- Subtle shadows.
+- Thoughtful borders.
+- Smooth but restrained transitions.
+- Consistent iconography.
+- High contrast and accessible controls.
+- Responsive desktop, tablet, and mobile layouts.
+
+Use a light neutral background with charcoal text and restrained teal or emerald accents. Use red and amber for appropriate risk indicators.
+
+Avoid:
+- Excessive gradients.
+- Too many floating cards.
+- Excessive glass effects.
+- Unnecessary animations.
+- Random decorative icons.
+- Fake map illustrations.
+- Oversized headings on every page.
+- Repeated generic AI-generated card layouts.
+- Fake statistics.
+- Fake live activity indicators.
+
+Use real map components and functional controls.
+
+Make the application feel like a thoughtfully designed navigation and personal-safety product.
+
+All buttons, forms, tabs, filters, navigation items, popups, and cards must perform meaningful actions.
+
+Provide loading states, error states, empty states, success messages, and confirmation dialogs.
+
+---
+
+# 4. APPLICATION STRUCTURE
+
+Create a maintainable project structure similar to the following:
+
+safecircle-ai/
+    frontend/
+        src/
+            components/
+            layouts/
+            pages/
+            features/
+                authentication/
+                dashboard/
+                route-planner/
+                safety-heatmap/
+                emergency/
+                trusted-contacts/
+                journey-sharing/
+                reports/
+                notifications/
+                admin/
+            hooks/
+            services/
+            context/
+            utils/
+            styles/
+            App.jsx
+            main.jsx
+        public/
+        package.json
+        .env.example
+
+    backend/
+        app/
+            main.py
+            core/
+            api/
+            models/
+            schemas/
+            services/
+            repositories/
+            middleware/
+            utils/
+        tests/
+        alembic/
+        requirements.txt
+        .env.example
+
+    database/
+        schema documentation and seed scripts
+
+    docs/
+        README.md
+        API documentation
+        database documentation
+        setup instructions
+        testing instructions
+        security documentation
+
+Adapt this structure when necessary, but preserve clear separation between frontend components, backend business logic, database access, and external service integrations.
+
+Create reusable components rather than duplicating code across pages.
+
+---
+
+# 5. LANDING PAGE
+
+Create a polished landing page that introduces SafeCircle AI.
+
+Include:
+
+- A navigation bar.
+- A logo and product name.
+- Home.
+- Explore Map.
+- Plan a Route.
+- Safety Features.
+- Sign In.
+- Create Account.
+- A clear hero headline.
+- A concise explanation of the product.
+- A prominent Plan a Safe Route button.
+- A secondary Explore Safety Map button.
+- A real map preview or map-inspired product screenshot.
+- An explanation of the route-analysis process.
+- A feature section.
+- An emergency-support section.
+- A privacy and responsible-data section.
+- A footer with relevant links.
+
+Interactions:
+
+- Plan a Safe Route opens the route planner.
+- Explore Safety Map opens the heatmap.
+- Authentication links open their respective pages.
+- Navigation links work correctly.
+- The mobile navigation menu opens and closes.
+- All links have appropriate destinations.
+
+Do not display invented user counts, fabricated crime-reduction statistics, or unsupported claims.
+
+---
+
+# 6. AUTHENTICATION
+
+Implement:
+
+- User registration.
+- User login.
+- Logout.
+- Password hashing.
+- Authentication state management.
+- Protected pages.
+- Profile editing.
+- Password-change functionality.
+- Account deletion.
+- Role-based access control.
+- Input validation.
+- Appropriate error messages.
+
+Use secure backend authentication.
+
+Validate all credentials on the server.
+
+If JWT is used, implement sensible expiration and secure token handling. Prefer secure, HttpOnly cookies where appropriate and configure CSRF protection when required by the chosen authentication architecture.
+
+Never store plaintext passwords.
+
+Never trust a role supplied by the frontend.
+
+Provide an optional guest mode for exploring non-sensitive map features.
+
+---
+
+# 7. USER DASHBOARD
+
+Create a dashboard containing:
+
+- Route planner shortcut.
+- Current location when permission is granted.
+- Nearby emergency facilities.
+- Recent safety alerts.
+- Saved routes.
+- Trusted contacts.
+- Active journey-sharing status.
+- Emergency SOS button.
+- Recent safety reports.
+- Account and privacy settings.
+
+All dashboard information must come from actual backend data or clearly identified local demonstration data.
+
+Each card must be clickable when it represents an action.
+
+For example, selecting a saved route opens that route, and selecting an emergency facility displays its location and details.
+
+Do not leave nonfunctional placeholder cards in the finished application.
+
+---
+
+# 8. INTERACTIVE ROUTE PLANNER
+
+This is the primary feature.
+
+Build a dedicated route-planning page using a real interactive map.
+
+Include:
+
+- Starting-point search.
+- Destination search.
+- Current-location selection.
+- Map-click location selection.
+- Address autocomplete or search results.
+- Swap start and destination.
+- Clear route.
+- Calculate routes.
+- Loading indicators.
+- Alternative route selection.
+- Route comparison.
+- Route detail panel.
+- Safety explanations.
+- Map legends.
+- Nearby emergency facilities.
+- Save route.
+- Start journey.
+- Share journey.
+
+The user must be able to select locations using either text search or the map.
+
+Use geocoding to resolve place names into coordinates.
+
+Request multiple route alternatives from the configured routing provider where supported.
+
+Do not draw arbitrary straight lines and present them as road routes.
+
+Each returned route should include:
+
+- Geometry.
+- Distance.
+- Estimated duration.
+- Available road information.
+- Safety indicators.
+- Data-quality information.
+
+Render route geometry as separate polylines on the map.
+
+Selecting a route must highlight it and update the corresponding information panel.
+
+If a routing provider returns fewer alternatives than requested, display the alternatives actually returned.
+
+Handle invalid locations, API failures, missing routes, and service limits gracefully.
+
+Do not pretend to provide live turn-by-turn navigation unless it has actually been implemented.
+
+---
+
+# 9. SAFETY ANALYSIS ENGINE
+
+Create a dedicated backend service for route-safety analysis.
+
+The analysis should use available information such as:
+
+- Relevant reported incidents.
+- Street-lighting coverage.
+- Road hazards.
+- Accident-related data.
+- Relevant weather hazards.
+- Available mapped facilities.
+- Data freshness.
+- Geographic coverage.
+- Source reliability.
+
+Start with an interpretable, configurable risk model.
+
+Normalise each available risk factor to a documented scale from 0 to 100.
+
+Use configurable weights for the factors that are supported by sufficient data.
+
+Calculate a preliminary route-safety score only when the required evidence is sufficient.
+
+Document the formula, assumptions, and limitations.
+
+Do not present an arbitrary mathematical score as a scientifically validated prediction.
+
+For each route, return:
+
+- Score, when justified.
+- Confidence or evidence-coverage indicator.
+- Risk-factor breakdown.
+- Relevant incident information.
+- Data sources.
+- Data freshness.
+- Missing-data indicators.
+- Explanation of the result.
+
+Distinguish between:
+1. Observed information.
+2. Model-derived estimates.
+3. Unknown information.
+
+Do not treat missing incident reports as zero risk.
+
+Do not interpret the absence of mapped streetlights as proof that a street is unlit.
+
+Do not assume that a greater number of nearby emergency facilities guarantees safety.
+
+Do not label an area dangerous solely because of demographic characteristics.
+
+Use route-length-aware and coverage-aware incident comparisons where appropriate.
+
+Use geographic buffers around route segments to identify nearby incidents and hazards.
+
+Allow the user to inspect the individual factors behind the overall result.
+
+If data is insufficient, display:
+
+"Insufficient safety data to calculate a reliable score."
+
+In that situation, show the available information without inventing a score.
+
+---
+
+# 10. ROUTE COLOUR CODING
+
+Use distinct route styles to communicate relative risk.
+
+GREEN:
+Better relative indicators based on available evidence.
+
+AMBER:
+Mixed risk indicators or meaningful uncertainty.
+
+RED:
+More substantial identified risk indicators.
+
+GREY:
+Insufficient evidence for a meaningful classification.
+
+Provide a visible legend explaining the colours.
+
+Do not rely on colour alone. Include text labels, icons where appropriate, and accessible contrast.
+
+The application must explain that these classifications are estimates based on available information, not guarantees of personal safety.
+
+Selecting a route should reveal the reasons for its classification.
+
+---
+
+# 11. SAFETY HEATMAP
+
+Create a dedicated interactive heatmap page.
+
+Include:
+
+- Interactive map.
+- Safety incident markers.
+- Incident clustering when appropriate.
+- Geographic heatmap layers when supported by the data.
+- Date-range filters.
+- Incident-category filters.
+- Location search.
+- Map zoom controls.
+- Current-location control.
+- Data-source information.
+- Legend.
+- Loading and empty states.
+
+When a user clicks an incident marker, show a detail panel with:
+
+- Incident category.
+- Approximate location.
+- Reported date.
+- Data source.
+- Verification status.
+- Available description.
+- Relevant safety information.
+
+Provide filters for available categories and time periods.
+
+Only include incidents from configured, legally accessible sources or properly moderated user reports.
+
+Do not fabricate incidents to make the map appear populated.
+
+Do not expose the identities or precise personal locations of victims.
+
+Use clustering or aggregation to reduce the risk of identifying individuals through location data.
+
+If data is unavailable for a selected area, clearly display that limitation.
+
+---
+
+# 12. AI SAFETY ASSISTANT
+
+Create an assistant interface where users can ask questions about the routes and safety data available in the application.
+
+Example questions:
+
+- Which route has fewer reported incidents?
+- Why was this route classified as higher risk?
+- What safety information is available near my destination?
+- Where are the nearby hospitals and police stations?
+- What does this safety score mean?
+- What precautions should I consider for this journey?
+
+The assistant must retrieve relevant data through backend services.
+
+Use an LLM API only when configured.
+
+Keep API credentials on the backend.
+
+Provide a deterministic fallback that explains available route data if the LLM provider is unavailable.
+
+Do not fabricate incident information.
+
+Do not claim that the assistant has searched live data unless a real query has been completed.
+
+Clearly distinguish sourced information from general advice.
+
+Provide concise responses and links or buttons to the relevant route, map, or facility.
+
+For emergencies, prioritise immediate practical instructions and appropriate emergency-service information.
+
+Do not make the AI assistant a prerequisite for core route planning or SOS functionality.
+
+---
+
+# 13. EMERGENCY SOS
+
+Implement a functional emergency-event workflow.
+
+Display an SOS control in the dashboard, route planner, and active journey interface.
+
+When activated:
+
+1. Obtain confirmation unless the user has configured another activation method.
+2. Request or retrieve the latest permitted location.
+3. Create an emergency event through the backend.
+4. Record its timestamp and event status.
+5. Notify configured trusted contacts using the configured delivery provider.
+6. Include a location link when the location is available and sharing is authorised.
+7. Show notification delivery status.
+8. Allow the user to retry failed notifications.
+9. Provide clear emergency-service contact options.
+10. Record event history.
+11. Allow the user to update or cancel the event.
+
+Implement appropriate duplicate-request protection so repeated clicks do not unintentionally create multiple emergency events.
+
+Do not represent a failed message as delivered.
+
+Do not display "Help is on the way" unless a verified integration actually confirms that fact.
+
+Support India's emergency number 112 through an appropriate contact action.
+
+Do not automatically contact emergency services without an explicitly designed, authorised, and legally appropriate integration.
+
+Clearly explain the limitations of the web application.
+
+---
+
+# 14. TRUSTED CONTACTS
+
+Create a dedicated page for trusted contacts.
+
+Allow users to:
+
+- Add contacts.
+- Edit contact information.
+- Remove contacts.
+- Verify contact details where supported.
+- Configure alert preferences.
+- Choose whether contacts receive journey updates.
+- Review notification status.
+
+Protect contact details through authentication and access controls.
+
+Do not allow arbitrary users to retrieve another user's contacts.
+
+Use consent-based sharing.
+
+Validate contact details and provide meaningful error messages.
+
+Prevent unauthorised access to emergency information.
+
+---
+
+# 15. JOURNEY SHARING
+
+Allow a user to start a journey-sharing session for a selected route.
+
+Implement:
+
+- Journey creation.
+- Start and destination details.
+- Start timestamp.
+- Expected arrival time when available.
+- Location updates while supported.
+- Trusted-contact selection.
+- Time-limited sharing.
+- Journey status.
+- End journey.
+- Revoke sharing.
+- Optional check-in reminders.
+- Optional delayed-arrival alerts.
+
+Use authenticated access or secure, unguessable, revocable sharing tokens.
+
+Do not expose location details through predictable public URLs.
+
+Apply appropriate expiration and rate limits.
+
+Use WebSockets or another appropriate mechanism if real-time updates are needed.
+
+For the web prototype, implement updates while the journey page is active.
+
+Clearly explain that continuous background location updates are not guaranteed by an ordinary browser when the page is closed or the device is locked.
+
+Never share a user's location without the necessary permission and authorisation.
+
+---
+
+# 16. SAFETY REPORTS
+
+Build a report-submission page and associated backend workflow.
+
+Allow users to report:
+
+- Poor lighting.
+- Road hazards.
+- Accident-prone areas.
+- Harassment or safety concerns.
+- Other relevant location-specific issues.
+
+Each report should support:
+
+- Category.
+- Location.
+- Description.
+- Submission timestamp.
+- Reporter reference.
+- Verification status.
+- Moderation status.
+
+Validate report content and prevent malicious or excessive submissions.
+
+Use rate limiting and server-side validation.
+
+Support statuses such as:
+
+- Pending.
+- Under Review.
+- Verified.
+- Rejected.
+
+Allow users to review their own submissions.
+
+Create an administrator review workflow.
+
+Do not expose reporter identities publicly.
+
+Do not automatically treat an unverified allegation as a confirmed crime.
+
+Provide a process to flag inaccurate reports and correct erroneous information.
+
+Do not allow the public reporting system to be used to publish personal information, identify alleged victims, or harass individuals.
+
+---
+
+# 17. NEARBY EMERGENCY FACILITIES
+
+Integrate a geographic search service to find mapped facilities.
+
+Support:
+
+- Police stations.
+- Hospitals.
+- Clinics.
+- Pharmacies.
+- Other relevant emergency facilities.
+
+Search around the user's permitted location, destination, or selected route.
+
+Display:
+
+- Facility name.
+- Facility category.
+- Location.
+- Distance from the selected point.
+- Available contact details.
+- Directions action.
+- Map marker.
+
+Use actual geographic data.
+
+Clearly identify incomplete or unverified contact information.
+
+Handle cases where no facilities are found.
+
+Clicking a facility should open its detail panel and highlight its location on the map.
+
+---
+
+# 18. WEATHER AND ROAD HAZARDS
+
+Integrate a weather provider when configured.
+
+Show relevant information such as:
+
+- Rain.
+- Severe-weather warnings.
+- Other supported weather hazards.
+
+Use actual provider responses and timestamps.
+
+Where suitable road-hazard data is available, incorporate it into route analysis.
+
+Do not claim to know live road conditions without a live data source.
+
+Do not treat a general weather forecast as proof that a particular road is unsafe.
+
+Explain how weather or road information affects the route analysis.
+
+---
+
+# 19. NOTIFICATIONS
+
+Create a notification centre.
+
+Support relevant events such as:
+
+- Safety reports near a saved route.
+- Relevant road hazards.
+- Weather warnings.
+- Journey check-in reminders.
+- Journey-sharing status changes.
+- Emergency-event status.
+- Alert delivery failures.
+
+Allow users to manage notification preferences.
+
+Use browser notifications only after permission is granted.
+
+Use actual email or SMS providers for external message delivery.
+
+Store notification status and relevant timestamps.
+
+Implement retries for appropriate transient failures.
+
+Never claim that an alert was delivered if the provider did not confirm delivery.
+
+---
+
+# 20. ADMIN DASHBOARD
+
+Create a separate administrator interface.
+
+Include:
+
+- Report moderation.
+- Report verification.
+- Incident-category management.
+- User-report management.
+- Data-source health.
+- Emergency-event status.
+- Aggregate usage statistics.
+- Audit logs.
+- System health indicators.
+
+Enforce administrator permissions on the backend.
+
+Do not rely on frontend route protection alone.
+
+Record important administrative actions.
+
+Protect sensitive user data.
+
+Only show metrics calculated from actual database records.
+
+If demonstration data is used, label it clearly as demonstration data.
+
+---
+
+# 21. DATABASE DESIGN
+
+Create appropriate SQLAlchemy models, PostgreSQL tables, relationships, indexes, and migrations.
+
+Include the following entities where needed:
+
+1. users
+2. user_profiles
+3. trusted_contacts
+4. routes
+5. journey_sessions
+6. location_updates
+7. safety_incidents
+8. safety_reports
+9. report_reviews
+10. emergency_events
+11. notifications
+12. notification_preferences
+13. saved_locations
+14. safety_analysis_results
+15. data_sources
+16. audit_logs
+
+Use foreign keys and appropriate constraints.
+
+Store timestamps consistently.
+
+Use geographic types and spatial indexes when PostGIS is available.
+
+Store incident provenance, report status, and data-source metadata.
+
+Apply appropriate retention policies to sensitive location information.
+
+Do not store passwords in plaintext.
+
+Do not expose private location histories through public endpoints.
+
+Create database migrations and a documented setup process.
+
+Add development seed data only when clearly identified as synthetic.
+
+Never mix synthetic records with real incident data without explicit labelling.
+
+---
+
+# 22. BACKEND API DESIGN
+
+Organise FastAPI routes into clear modules.
+
+Implement suitable endpoints for:
+
+AUTHENTICATION:
+- POST /api/auth/register
+- POST /api/auth/login
+- POST /api/auth/logout
+- GET /api/auth/me
+
+PROFILE:
+- GET /api/profile
+- PATCH /api/profile
+- DELETE /api/profile
+
+ROUTES:
+- POST /api/routes/alternatives
+- POST /api/routes/analyse
+- GET /api/routes/saved
+- POST /api/routes/saved
+- DELETE /api/routes/saved/{route_id}
+
+SAFETY MAP:
+- GET /api/safety/incidents
+- GET /api/safety/heatmap
+- GET /api/safety/nearby
+- GET /api/safety/sources
+
+REPORTS:
+- POST /api/reports
+- GET /api/reports/mine
+- GET /api/reports/{report_id}
+
+TRUSTED CONTACTS:
+- GET /api/contacts
+- POST /api/contacts
+- PATCH /api/contacts/{contact_id}
+- DELETE /api/contacts/{contact_id}
+
+JOURNEYS:
+- POST /api/journeys
+- GET /api/journeys/active
+- POST /api/journeys/{journey_id}/location
+- POST /api/journeys/{journey_id}/end
+- POST /api/journeys/{journey_id}/share
+
+EMERGENCY:
+- POST /api/emergency/sos
+- GET /api/emergency/history
+- GET /api/emergency/{event_id}
+- POST /api/emergency/{event_id}/cancel
+
+NOTIFICATIONS:
+- GET /api/notifications
+- PATCH /api/notifications/{notification_id}
+- GET /api/notifications/preferences
+- PATCH /api/notifications/preferences
+
+ADMIN:
+- GET /api/admin/reports
+- POST /api/admin/reports/{report_id}/review
+- GET /api/admin/health
+- GET /api/admin/analytics
+
+AI ASSISTANT:
+- POST /api/assistant/query
+
+Treat these paths as a proposed API contract, not a requirement to implement unnecessary endpoints. Adjust them where appropriate, document the final API, and keep the frontend and backend consistent.
+
+Implement request validation, authentication, authorisation, appropriate HTTP status codes, error handling, rate limiting, and pagination.
+
+Never return secrets or unnecessary personal information in API responses.
+
+Use OpenAPI documentation generated by FastAPI.
+
+---
+
+# 23. EXTERNAL API INTEGRATIONS
+
+Create a separate service module for each external provider.
+
+Implement:
+
+- Geocoding.
+- Route calculation.
+- Geographic facility search.
+- Safety-data retrieval.
+- Weather retrieval.
+- AI assistant integration.
+- Email or SMS delivery.
+
+Keep provider-specific logic out of UI components.
+
+Use environment variables for credentials.
+
+Respect provider rate limits and terms of use.
+
+Handle timeouts, errors, and unavailable providers.
+
+Use caching where appropriate.
+
+Display the timestamp and source of retrieved information.
+
+Do not assume that an external service provides crime information merely because it provides map or routing data.
+
+Do not scrape restricted services or invent unsupported endpoints.
+
+If an official safety-data source is unavailable, display the data gap and allow the application to function with the remaining configured sources.
+
+Document the exact services and credentials required to enable each integration.
+
+---
+
+# 24. SECURITY AND PRIVACY
+
+Implement:
+
+- Secure password hashing.
+- Authentication and authorisation.
+- Server-side input validation.
+- Rate limiting.
+- CORS restrictions.
+- Secure secret management.
+- Safe error messages.
+- Appropriate CSRF protection where required.
+- Protection against unauthorised record access.
+- Audit logging for sensitive administrative actions.
+- Secure sharing tokens.
+- Location-sharing consent.
+- Appropriate data-retention policies.
+- Account deletion.
+- Protection against unauthorised emergency-data access.
+
+Never expose API keys or credentials in the frontend.
+
+Do not collect precise location information unnecessarily.
+
+Do not publish private location histories.
+
+Avoid logging passwords, authentication tokens, or precise sensitive location information.
+
+Use HTTPS in production.
+
+Provide a privacy notice explaining what information is collected, why it is collected, who can access it, and how users can revoke sharing.
+
+---
+
+# 25. RESPONSIVE DESIGN AND ACCESSIBILITY
+
+Make the application work on desktop, tablet, and mobile.
+
+Ensure:
+
+- Responsive navigation.
+- Mobile-friendly maps.
+- Accessible buttons.
+- Keyboard navigation.
+- Visible focus states.
+- Appropriate text contrast.
+- Screen-reader labels.
+- Text alternatives to colour-coded risk indicators.
+- Clear confirmation dialogs.
+- Large emergency controls.
+- Useful error messages.
+
+On small screens, use a map with a collapsible or draggable route-information panel.
+
+Avoid placing important controls behind hover-only interactions.
+
+---
+
+# 26. TESTING REQUIREMENTS
+
+Write and run tests for the important application workflows.
+
+BACKEND TESTS:
+- User registration.
+- Login.
+- Password verification.
+- Authentication requirements.
+- Role-based permissions.
+- Route endpoint validation.
+- Safety-score calculation.
+- Missing-data handling.
+- Geographic incident queries.
+- Report submission.
+- Report moderation.
+- Trusted-contact access controls.
+- SOS event creation.
+- Notification failure handling.
+- Journey-sharing permissions.
+- Administrative access restrictions.
+
+FRONTEND TESTS:
+- Navigation.
+- Registration and login forms.
+- Route selection.
+- Alternative-route selection.
+- Safety detail panels.
+- Heatmap filters.
+- Report submission.
+- Trusted-contact management.
+- SOS confirmation.
+- Journey-sharing controls.
+- Responsive layouts.
+- Loading and error states.
+
+END-TO-END TEST:
+1. Register a user.
+2. Log in.
+3. Select a starting point.
+4. Select a destination.
+5. Request alternative routes.
+6. Display available safety information.
+7. Inspect a route's details.
+8. Save the route.
+9. Add a trusted contact.
+10. Start a journey-sharing session.
+11. Trigger a test SOS event.
+12. Verify the emergency event and notification status.
+13. Submit a safety report.
+14. Log in as an administrator.
+15. Review the submitted report.
+
+Use a test delivery provider or mock for emergency notifications during development.
+
+Never send test emergency messages to real people without explicit authorisation.
+
+---
+
+# 27. SETUP AND DOCUMENTATION
+
+Create a comprehensive README containing:
+
+- Project overview.
+- Features.
+- Technology stack.
+- Prerequisites.
+- Installation steps.
+- Environment-variable setup.
+- Database configuration.
+- PostGIS setup.
+- Database migrations.
+- Development seed data.
+- Frontend startup commands.
+- Backend startup commands.
+- Testing commands.
+- External API configuration.
+- Known limitations.
+- Troubleshooting.
+- Production deployment considerations.
+
+Create .env.example files without real credentials.
+
+Provide the exact commands required to start the frontend and backend on Windows PowerShell.
+
+Use a clear startup sequence.
+
+Verify that the documented commands match the actual project configuration.
+
+---
+
+# 28. IMPLEMENTATION STRATEGY
+
+Work in the following order.
+
+PHASE 1: PROJECT FOUNDATION
+- Inspect the development environment.
+- Create the frontend and backend structure.
+- Configure dependencies.
+- Set up environment variables.
+- Configure the database.
+- Create the initial landing page.
+- Verify that the frontend and backend start.
+
+PHASE 2: CORE APPLICATION
+- Implement authentication.
+- Create the dashboard.
+- Add the map.
+- Integrate geocoding.
+- Implement route calculation.
+- Display alternative routes.
+
+PHASE 3: SAFETY INTELLIGENCE
+- Implement safety-data models.
+- Integrate configured safety-data sources.
+- Implement geographic queries.
+- Create the safety-analysis engine.
+- Display transparent route-risk indicators.
+- Implement the heatmap.
+
+PHASE 4: USER SAFETY FEATURES
+- Implement trusted contacts.
+- Implement safety reports.
+- Implement emergency facilities.
+- Implement journey sharing.
+- Implement SOS event management.
+- Configure notification delivery.
+
+PHASE 5: AI AND ADMINISTRATION
+- Integrate the AI assistant.
+- Create the admin dashboard.
+- Implement report moderation.
+- Add data-source health information.
+- Add audit logging.
+
+PHASE 6: FINALISATION
+- Test all important workflows.
+- Fix errors.
+- Improve responsive design.
+- Review security.
+- Verify external integrations.
+- Complete documentation.
+- Confirm that every visible control works.
+
+Do not mark a phase complete merely because its UI has been created.
+
+Verify the relevant functionality before proceeding.
+
+---
+
+# 29. FINAL ACCEPTANCE CRITERIA
+
+The finished application must satisfy the following conditions:
+
+1. The frontend starts successfully.
+2. The backend starts successfully.
+3. The database can be configured and migrated.
+4. Users can register and authenticate.
+5. The map displays actual map data.
+6. Location search uses a real configured geocoding service.
+7. Route alternatives come from a real routing service.
+8. Route details update when the user selects a route.
+9. Safety analysis uses actual configured data or clearly labelled demonstration data.
+10. Missing safety information is handled honestly.
+11. The heatmap displays only supported incident information.
+12. Users can submit and review safety reports.
+13. Trusted contacts are protected by access controls.
+14. SOS creates an actual backend emergency event.
+15. Notification status accurately reflects delivery results.
+16. Journey sharing respects permissions and can be revoked.
+17. The AI assistant does not fabricate live information.
+18. Admin functions are protected by backend authorisation.
+19. All navigation and primary buttons work.
+20. The interface is responsive and accessible.
+21. The application contains no exposed credentials.
+22. Automated tests cover the critical workflows.
+23. Setup and troubleshooting instructions are complete.
+24. Unsupported or unavailable integrations are documented honestly.
+
+---
+
+# FINAL INSTRUCTION
+
+Build SafeCircle AI as one integrated full-stack product, not as disconnected demo pages.
+
+Prioritise the route planner, transparent safety analysis, real map integration, emergency workflows, privacy, and a polished user experience.
+
+Start by examining the available workspace. If it is empty, create the project from scratch. If files already exist, inspect them before changing anything.
+
+Implement features in manageable phases, run the application, test the actual workflows, fix errors, and keep the documentation updated.
+
+At the end, provide:
+- The completed project structure.
+- Installation commands.
+- Environment-variable instructions.
+- Database setup instructions.
+- Startup commands.
+- Testing results.
+- Configured integrations.
+- Integrations that still require credentials.
+- Known limitations.
+
+Do not claim that the project is complete until the critical workflows have been implemented and tested.

@@ -1,0 +1,361 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --theme-bg: #07090D;
+  --theme-secondary-bg: #0D1117;
+  --theme-card-bg: #121721;
+  --theme-border: #1F2937;
+  --theme-primary: #168BFF;
+  --theme-secondary: #FFD43B;
+  --theme-tertiary: #38BDF8;
+  --theme-glow: rgba(22, 139, 255, 0.28);
+  --theme-secondary-glow: rgba(255, 212, 59, 0.22);
+
+  --accent-primary: var(--theme-primary);
+  --accent-secondary: var(--theme-secondary);
+  --accent-tertiary: var(--theme-tertiary);
+  --accent-glow: var(--theme-glow);
+  --accent-secondary-glow: var(--theme-secondary-glow);
+}
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-crimson-bg: var(--theme-bg);
+  --color-crimson-secondary: var(--theme-secondary-bg);
+  --color-crimson-card: var(--theme-card-bg);
+  --color-crimson-border: var(--theme-border);
+  --color-crimson-primary: var(--theme-primary);
+  --color-crimson-bright: var(--theme-secondary);
+  --color-cyber-cyan: var(--theme-primary);
+  --color-electric-violet: var(--theme-tertiary);
+  --color-solar-amber: var(--theme-secondary);
+  --color-crimson-text: #FFFFFF;
+  --color-crimson-muted: #9CA3AF;
+  --color-risk-low: #22C55E;
+  --color-risk-moderate: #F59E0B;
+  --color-risk-high: #EF4444;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--theme-bg);
+    color: #FFFFFF;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    transition: background-color 0.35s ease, color 0.25s ease;
+  }
+
+  ::selection {
+    background-color: var(--theme-glow);
+    color: #FFFFFF;
+  }
+
+  select option {
+    background-color: var(--theme-secondary-bg);
+    color: #FFFFFF;
+  }
+}
+
+/* =========================================================
+   DYNAMIC THEME COLOR BINDINGS ACROSS ALL FRONTEND PAGES
+   ========================================================= */
+.bg-\[\#07090D\],
+.bg-\[\#09090B\] {
+  background-color: var(--theme-bg) !important;
+}
+
+.bg-\[\#168BFF\],
+.bg-\[\#E11D48\],
+.hover\:bg-\[\#E11D48\]:hover,
+.hover\:bg-\[\#FF334F\]:hover,
+.hover\:bg-\[\#168BFF\]\/90:hover {
+  background-color: var(--theme-primary) !important;
+}
+
+.bg-\[\#168BFF\]\/15,
+.bg-\[\#168BFF\]\/10,
+.bg-\[\#E11D48\]\/15,
+.bg-\[\#E11D48\]\/20 {
+  background-color: color-mix(in srgb, var(--theme-primary) 16%, transparent) !important;
+}
+
+.text-\[\#168BFF\],
+.text-\[\#E11D48\],
+.hover\:text-\[\#168BFF\]:hover,
+.group:hover .group-hover\:text-\[\#168BFF\] {
+  color: var(--theme-primary) !important;
+}
+
+.text-\[\#FFD43B\],
+.text-\[\#FF334F\],
+.hover\:text-\[\#FF334F\]:hover,
+.group:hover .group-hover\:text-\[\#FFD43B\] {
+  color: var(--theme-secondary) !important;
+}
+
+.bg-\[\#FFD43B\] {
+  background-color: var(--theme-secondary) !important;
+}
+
+.bg-\[\#FFD43B\]\/15 {
+  background-color: color-mix(in srgb, var(--theme-secondary) 16%, transparent) !important;
+}
+
+.border-\[\#168BFF\],
+.border-\[\#E11D48\],
+.border-\[\#168BFF\]\/40,
+.border-\[\#168BFF\]\/30,
+.border-\[\#168BFF\]\/25,
+.border-\[\#E11D48\]\/50,
+.border-\[\#E11D48\]\/40 {
+  border-color: color-mix(in srgb, var(--theme-primary) 55%, transparent) !important;
+}
+
+.border-\[\#FFD43B\],
+.border-\[\#FFD43B\]\/30,
+.group:hover .group-hover\:border-\[\#FFD43B\] {
+  border-color: color-mix(in srgb, var(--theme-secondary) 65%, transparent) !important;
+}
+
+.accent-\[\#E11D48\],
+.accent-\[\#168BFF\] {
+  accent-color: var(--theme-primary) !important;
+}
+
+/* =========================================================
+   AMBIENT LIGHTING ORBS — REACTIVE TO SELECTED FRONTEND THEME
+   ========================================================= */
+@keyframes auroraDriftOne {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(60px, 40px, 0) scale(1.08);
+  }
+}
+
+@keyframes auroraDriftTwo {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-70px, -45px, 0) scale(1.1);
+  }
+}
+
+.live-aurora-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(110px);
+  will-change: transform;
+  pointer-events: none;
+  transition: background 0.5s ease;
+}
+
+.live-aurora-cyan {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--theme-primary) 24%, transparent) 0%,
+    color-mix(in srgb, var(--theme-primary) 6%, transparent) 50%,
+    transparent 75%
+  );
+  animation: auroraDriftOne 26s ease-in-out infinite;
+}
+
+.live-aurora-amber {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--theme-secondary) 16%, transparent) 0%,
+    color-mix(in srgb, var(--theme-secondary) 4%, transparent) 50%,
+    transparent 75%
+  );
+  animation: auroraDriftTwo 30s ease-in-out infinite;
+}
+
+.live-aurora-magenta,
+.live-aurora-violet,
+.live-aurora-emerald,
+.live-aurora-crimson {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--theme-primary) 20%, transparent) 0%,
+    color-mix(in srgb, var(--theme-secondary) 6%, transparent) 50%,
+    transparent 75%
+  );
+  animation: auroraDriftOne 28s ease-in-out infinite;
+}
+
+.live-prism-mesh {
+  background:
+    radial-gradient(at 15% 15%, color-mix(in srgb, var(--theme-primary) 14%, transparent) 0px, transparent 55%),
+    radial-gradient(at 85% 20%, color-mix(in srgb, var(--theme-secondary) 10%, transparent) 0px, transparent 50%),
+    radial-gradient(at 50% 85%, color-mix(in srgb, var(--theme-primary) 10%, transparent) 0px, transparent 55%);
+}
+
+.live-geo-grid {
+  background-size: 64px 64px;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  mask-image: radial-gradient(ellipse at center, black 35%, transparent 88%);
+}
+
+/* =========================================================
+   CINEMATIC GLASSMORPHISM CARDS & SURFACES
+   ========================================================= */
+.luxury-card,
+.crimson-card {
+  position: relative;
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--theme-card-bg) 78%, transparent) 0%,
+    color-mix(in srgb, var(--theme-bg) 72%, transparent) 100%
+  );
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 1.25rem;
+  box-shadow:
+    0 24px 48px -16px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+}
+
+.luxury-card::before,
+.crimson-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 12%;
+  right: 12%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--theme-primary) 50%, transparent),
+    color-mix(in srgb, var(--theme-secondary) 40%, transparent),
+    transparent
+  );
+  pointer-events: none;
+}
+
+.luxury-card-hover,
+.crimson-card-hover {
+  transition:
+    border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.3s ease;
+}
+
+.luxury-card-hover:hover,
+.crimson-card-hover:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--theme-primary) 50%, transparent);
+  box-shadow:
+    0 28px 56px -14px rgba(0, 0, 0, 0.85),
+    0 0 28px -8px color-mix(in srgb, var(--theme-primary) 30%, transparent),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Clean Apple-Style Translucent Navbar */
+.glass-navbar {
+  background: color-mix(in srgb, var(--theme-bg) 82%, transparent);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Inner Surfaces & Inputs */
+.luxury-card .bg-\[\#111114\],
+.luxury-card .bg-\[\#18181B\],
+.glass-subsurface {
+  background: color-mix(in srgb, var(--theme-secondary-bg) 72%, transparent) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-color: rgba(255, 255, 255, 0.09) !important;
+}
+
+.luxury-card input,
+.luxury-card select,
+.luxury-card textarea {
+  background-color: color-mix(in srgb, var(--theme-bg) 78%, transparent) !important;
+  backdrop-filter: blur(12px);
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.luxury-card input:focus,
+.luxury-card select:focus,
+.luxury-card textarea:focus {
+  border-color: var(--theme-primary) !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--theme-primary) 22%, transparent);
+}
+
+/* Custom Leaflet Dark Styling */
+.leaflet-container {
+  background: var(--theme-bg) !important;
+  font-family: var(--font-sans) !important;
+}
+
+.map-dark-tiles .leaflet-tile-pane {
+  filter: invert(100%) hue-rotate(180deg) brightness(94%) contrast(92%) saturate(90%);
+}
+
+@keyframes gmapPulseRing {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.78;
+  }
+  70% {
+    transform: scale(1.78);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.78);
+    opacity: 0;
+  }
+}
+
+.gmap-pulse-ring {
+  animation: gmapPulseRing 2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: color-mix(in srgb, var(--theme-secondary-bg) 94%, transparent) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  color: #FFFFFF !important;
+  border: 1px solid color-mix(in srgb, var(--theme-primary) 35%, transparent) !important;
+  box-shadow: 0 20px 38px -10px rgba(0, 0, 0, 0.85) !important;
+  border-radius: 14px !important;
+}
+
+.leaflet-control-zoom a {
+  background-color: color-mix(in srgb, var(--theme-secondary-bg) 90%, transparent) !important;
+  backdrop-filter: blur(12px) !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.leaflet-control-zoom a:hover {
+  background: var(--theme-primary) !important;
+  color: #FFFFFF !important;
+}
+
+/* Gradient Text Utilities */
+.crimson-gradient-text,
+.gold-gradient-text,
+.prism-gradient-text,
+.theme-gradient-text {
+  background: linear-gradient(125deg, #FFFFFF 0%, var(--theme-primary) 55%, var(--theme-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

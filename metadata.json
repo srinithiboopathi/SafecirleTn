@@ -1,0 +1,6 @@
+{
+  "name": "SafeCircle AI - Women's Route Safety & Intelligence",
+  "description": "AI-powered women's travel safety and route intelligence platform analysing alternative routes, safety incidents, street lighting, weather hazards, and emergency SOS.",
+  "requestFramePermissions": ["geolocation", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
